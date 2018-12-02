@@ -1,0 +1,23 @@
+To start a single instance of ScyllaDB, use the following command (entered all on one line):
+    $ docker run --name scylla -d scylladb/scylla --smp 1 --memory 1G --overprovisioned 1 --developer-mode 1 --experimental 1
+
+Wait a few moments, then check that ScyllaDB is up with
+    $ docker exec -it scylla nodetool status
+
+If this command fails, you can check for errors in the ScyllaDB logs by running
+    $ docker logs scylla
+
+Once ScyllaDB is up, you can execute CQL commands using
+    $ docker exec -it scylla cqlsh
+
+If you need to stop ScyllaDB, use
+    $ docker stop scylla
+
+and restart with
+    $ docker start scylla
+
+You can remove ScyllaDB completely and start over with
+    $ docker rm -f scylla && docker rmi scylladb/scylla
+
+
+Once the docker instance of ScyllaDB is up and running just run the statements in test.cql
