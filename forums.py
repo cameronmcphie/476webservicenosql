@@ -12,6 +12,26 @@ def forum():
         forum_submit = request.get_json()
         #parse the name from JSON
         forum_name = forum_submit.get('name')
+        
+        # Possible implementation for GET and POST of forums
+        # forums
+        # POST
+        # INSERT INTO discussion_forum.Content (forumid, forumcreator, forumtitle, postid, postauthor, posttimestamp, posttext)
+        # VALUES (?, ?, ?, ?, ?, ?, ?)
+
+        # forum_post_stmt = session.prepare("
+        #                   INSERT INTO discussion_forum.Content (forumid, forumcreator, forumtitle, postid, postauthor, posttimestamp, posttext)
+        #                   VALUES (?, ?, ?, ?, ?, ?, ?)
+        #               ")
+
+        # GET
+        # SELECT 		forumid, forumcreator, forumtitle, posttimestamp 
+        # FROM 		discussion_forum.Content 
+        # WHERE 		forumid=?;
+
+        # forum_get_stmt = session.prepare("SELECT forumid, forumcreator, forumtitle, posttimestamp FROM discussion_forum.Content where forumid=? ORDER BY posttimestamp DESC")
+
+        
         # If forumn name does't exist insert it into the db and return success
         if query_db('SELECT ForumsName from Forums where ForumsName = ?', [request.get_json().get('name')], one=True) is None:
             query = 'INSERT into Forums (CreatorId, ForumsName) Values ((Select UserId from Users where Username = ?), ?);'
