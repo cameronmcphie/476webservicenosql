@@ -4,6 +4,7 @@ import sqlite3
 import json
 from datetime import datetime
 from time import gmtime, strftime
+from cassandra.cluster import Cluster
 
 # Global db variable
 DATABASE = 'forum.db'

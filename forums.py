@@ -47,12 +47,27 @@ def forum():
             return get_response(409)
     #request for all the present forums
     elif request.method == 'GET':
-        query = 'SELECT Users.Username as creator, Forums.ForumId as id, Forums.ForumsName as name FROM Forums, Users where CreatorId = UserId;'
-        conn = sqlite3.connect(DATABASE)
-        conn.row_factory = dict_factory
-        cur = conn.cursor()
-        all_forums = cur.execute(query).fetchall()
+        
+        # query = 'SELECT Users.Username as creator, Forums.ForumId as id, Forums.ForumsName as name FROM Forums, Users where CreatorId = UserId;'
+        # conn = sqlite3.connect(DATABASE)
+        # conn.row_factory = dict_factory
+        # cur = conn.cursor()
+        # all_forums = cur.execute(query).fetchall()
+        
+        cluster = Cluster(['172.17.0.1 ','172.17.0.2'])
 
+        session = cluster.connect("discussion_forum")
+
+        rows = session.execute("SELECT * FROM Forums;")
+        
+        forums = {}
+        all_forums = []
+        for forum_row in rows:
+            forums['id'] = forum_row.forumid
+            forums['name'] = forum_row.forumcreator
+            forums['creator'] = forum_row.forumtitle
+            all_forums.append(forums.copy())
+        
         return jsonify(all_forums)
     else:
         return get_response(405)
