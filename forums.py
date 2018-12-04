@@ -1,4 +1,5 @@
 from helper_funs import *
+from cassandra.cluster import Cluster
 
 def forum():
     #creating a new discussion forum
