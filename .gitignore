@@ -2,3 +2,4 @@ forum.db
 node_modules/
 api.pyc
 html/
+__pycache__
