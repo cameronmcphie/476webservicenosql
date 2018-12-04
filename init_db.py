@@ -60,13 +60,13 @@ def init_db():
                 postauthor text,
                 posttimestamp timestamp,
                 posttext text,
-                Primary Key (postid)
+                Primary Key ((forumid))
                 );
         """)
 
-        session.execute("CREATE INDEX ON discussion_forum.Content (forumid);")
-
         session.execute("CREATE INDEX ON discussion_forum.Content (threadid);")
+
+        session.execute("CREATE INDEX ON discussion_forum.Content (postid);")
 
         session.execute("CREATE INDEX ON discussion_forum.Content (posttimestamp);")
 
