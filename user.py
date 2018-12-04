@@ -1,4 +1,5 @@
 from helper_funs import *
+from cassandra.cluster import Cluster
 
 def user_auth():
     if request.method == 'POST':
@@ -6,26 +7,41 @@ def user_auth():
         data = request.get_json()
         username = data['username']
         password = data['password']
-        query = 'SELECT Username FROM Users WHERE Username=?'
-        conn = sqlite3.connect(DATABASE)
-        cur = conn.cursor()
+        #query = 'SELECT Username FROM discussion_forum.Users WHERE Username=?'
+        query = "SELECT Username FROM discussion_forum.Users WHERE Username=%s"
+        # conn = sqlite3.connect(DATABASE)
+        # cur = conn.cursor()
+
+        cluster = Cluster(['172.17.0.1 ','172.17.0.2'])
+        conn = cluster.connect()
+
+
 
         # https://stackoverflow.com/questions/16856647/sqlite3-programmingerror-incorrect-number-of-bindings-supplied-the-current-sta
         # Was running into an issue regarding the execute statement and needed to include a ',' after data['username'] in order for the query
         # to be ran
-        user = cur.execute(query, (username,)).fetchall()
+        # user = cur.execute(query, (username,)).fetchall()
+
+        print(username)
+
+        user = conn.execute(query, (data['username'], ))
+
+
 
         if user == []:
-            query = 'INSERT INTO Users (Username, Password) VALUES (?, ?);'
-            conn = sqlite3.connect(DATABASE)
-            cur = conn.cursor()
+            # query = 'INSERT INTO Users (Username, Password) VALUES (?, ?);'
+            # conn = sqlite3.connect(DATABASE)
+            # cur = conn.cursor()
+            query = 'INSERT INTO discussion_forum.Users (Username, Password) VALUES (%s, %s);'
+            conn.execute(query, ((data['username'], data['password'])))
+
             # Need to use parameterised queries so API can insert values for username and
             # password into the query at the places with a ?
             # sources:
             # https://stackoverflow.com/questions/32945910/python-3-sqlite3-incorrect-number-of-bindings
             # https://stackoverflow.com/questions/32240718/dict-object-has-no-attribute-id
-            cur.execute(query, (data['username'], data['password']))
-            conn.commit()
+            # cur.execute(query, (data['username'], data['password']))
+            # conn.commit()
             return get_response(201)
         else:
             return get_response(409)
