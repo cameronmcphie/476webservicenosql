@@ -1,4 +1,6 @@
 from helper_funs import *
+from cassandra.cluster import Cluster
+from uuid import UUID
 
 def thread(forum_id):
     #creating a new thread in a specified forum
@@ -31,14 +33,23 @@ def thread(forum_id):
             return get_response(404)
 
     elif request.method == 'GET':
-        query = 'SELECT id, title, Users.Username as creator, timestamp from (select id, AuthorId, timestamp, title from (select Threads.ThreadId as id, AuthorId, timestamp, Threads.ThreadsTitle as title, Threads.ForumId as Fid from (select ThreadBelongsTo, AuthorId, PostsTimestamp as timestamp, Posts.PostId from Posts) join Threads on ThreadBelongsTo = Threads.ThreadId group by Threads.ThreadId having max(PostId) order by PostId desc) join Forums on Fid = Forums.ForumId where Forums.ForumId = ?) join Users where AuthorId = Users.UserId'
-        to_filter = []
-        #return all the threads from the forum
         if forum_id:
-            conn = sqlite3.connect(DATABASE)
-            conn.row_factory = dict_factory
-            cur = conn.cursor()
-            all_threads = cur.execute(query, [str(forum_id)]).fetchall()
+            cluster = Cluster(['172.17.0.1 ','172.17.0.2'])
+
+            session = cluster.connect("discussion_forum")
+
+            #TODO: Fix to only show threads and posts as well. May need to adjust scheme
+            rows = session.execute("SELECT * FROM Content where forumid = %s;", [UUID(forum_id)])
+
+            threads = {}
+            all_threads = []
+            for thread_row in rows:
+                threads['id'] = thread_row.threadid
+                threads['title'] = thread_row.threadtitle
+                threads['creator'] = thread_row.postauthor
+                threads['timestamp'] = thread_row.posttimestamp
+                all_threads.append(threads.copy())
+
             # If the the quey returns an empty result
             # e.g. http://127.0.0.1:5000/forums/100
             if all_threads == []:

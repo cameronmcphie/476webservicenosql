@@ -1,6 +1,7 @@
 from helper_funs import *
 from cassandra.cluster import Cluster
 
+
 def forum():
     #creating a new discussion forum
     if request.method == 'POST':
@@ -65,8 +66,8 @@ def forum():
         all_forums = []
         for forum_row in rows:
             forums['id'] = forum_row.forumid
-            forums['name'] = forum_row.forumcreator
-            forums['creator'] = forum_row.forumtitle
+            forums['name'] = forum_row.forumtitle
+            forums['creator'] = forum_row.forumcreator
             all_forums.append(forums.copy())
         
         return jsonify(all_forums)
