@@ -44,7 +44,7 @@ def init_db():
         session.execute("""CREATE TABLE Users (
           username text,
           password text,
-          Primary Key (username, password)
+          Primary Key (username)
         );""")
 
         session.execute("DROP TABLE IF EXISTS Content;")

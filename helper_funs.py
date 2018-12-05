@@ -5,8 +5,14 @@ import json
 from datetime import datetime
 from time import gmtime, strftime
 
+from cassandra.cluster import Cluster
+from cassandra.query import dict_factory
+
 # Global db variable
-DATABASE = 'forum.db'
+# DATABASE = 'forum.db'
+
+#Global cluster variable
+CLUSTERNODES = ['172.17.0.1 ','172.17.0.2']
 
 app = Flask(__name__)
 
@@ -15,7 +21,10 @@ app = Flask(__name__)
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+
+        cluster = Cluster(CLUSTERNODES)
+
+        db = g._database = cluster.connect('discussion_forum') #sqlite3.connect(DATABASE)
         db.row_factory = dict_factory
     return db
 
@@ -34,27 +43,46 @@ def close_connection(exception):
 # returns results of the query
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
+    rv = cur #.fetchall()
+    #cur.shutdown()
+
     return (rv[0] if rv else None) if one else rv
 
 # dictionary function taken from programminghistorian for placement purposes
-def dict_factory(cursor, row):
-    d={}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]]= row[idx]
-    return d
+# def dict_factory(cursor, row):
+#     d={}
+#     for idx, col in enumerate(cursor.): #.description
+#         d[col[0]]= row[idx]
+#     return d
 
 #subclass of BasicAuth (based off Flask-BasicAuth extension)
 class NewAuth(BasicAuth):
     #override of check_credentials
     # returns true if the username and password matches else returns false
     def check_credentials(self, username, password):
-        user = query_db('SELECT Username, Password from Users where Username = ? and password = ?', [username, password], one=True)
-        if user is not None:
-            return True
-        else:
+        #user = query_db('SELECT Username, Password from Users where Username = % and password = ?', [username, password], one=True)
+        #initialquery = 'SELECT Username, Password from Users where Username = %s and password = %s;'
+        firstquery = 'SELECT Password from Users where username =  %s;'
+
+        user = query_db(firstquery, (username, ), one=True)
+        # user = query_db('SELECT Username, Password from Users where Username = %s and password = %s;', (username, password), one=True)
+
+        #print(user['password'])
+
+        if user is None:
             return False
+        else:
+            retrievedpass = user['password']
+            if retrievedpass == password:
+                return True
+        # elif retrievedpass
+            else:
+                return False
+
+        # if user is not None:
+        #     return True
+        # else:
+        #     return False
 
 #function to check the auth object for present authorization
 def auth_check(auth):

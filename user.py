@@ -64,12 +64,17 @@ def change_pass(username):
         password = data.get('password')
 
         # Query the db to determine if the username has an account
-        query = "SELECT Username FROM Users WHERE Username=?"
-        conn = sqlite3.connect(DATABASE)
-        cur = conn.cursor()
+        # query = "SELECT Username FROM Users WHERE Username=?"
+        query = 'SELECT Username FROM discussion_forum.Users WHERE Username=%s'
+
+        cluster = Cluster(['172.17.0.1 ','172.17.0.2'])
+        conn = cluster.connect('discussion_forum')
+        # conn = sqlite3.connect(DATABASE)
+        # cur = conn.cursor()
         # https://stackoverflow.com/questions/14861162/cursor-fetchall-returns-extra-characters-using-mysqldb-and-python
         # If using fetchall() there is a potential error because it returns a list of tuples rather than just one tuple
-        user = cur.execute(query, [data.get('username')]).fetchone()
+        user = conn.execute(query, [data.get('username')]) #.fetchone()
+
 
         if user == None:
             #print ("hah not found")
@@ -81,11 +86,16 @@ def change_pass(username):
             #print ("hey you, stop it")
             return get_response(409)
         else:
-            query = "UPDATE Users SET Password=? WHERE Username=?"
-            conn = sqlite3.connect(DATABASE)
-            cur = conn.cursor()
-            cur.execute(query, (password, username))
-            conn.commit()
+            # query = "UPDATE Users SET Password=? WHERE Username=?"
+            query = "UPDATE Users SET Password = %s WHERE Username = %s;"
+
+            cluster = Cluster(['172.17.0.1 ','172.17.0.2'])
+            conn = cluster.connect('discussion_forum')
+            # conn = sqlite3.connect(DATABASE)
+
+            # cur = conn.cursor()
+            conn.execute(query, (password, username))
+            #conn.commit()
 
             return get_response(200)
 
