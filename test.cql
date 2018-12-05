@@ -22,6 +22,8 @@ CREATE TABLE Content (
   Primary Key (postid)
 );
 
+CREATE INDEX ON discussion_forum.Content (forumid);
+
 CREATE INDEX ON discussion_forum.Content (threadid);
 
 CREATE INDEX ON discussion_forum.Content (posttimestamp);
