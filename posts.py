@@ -49,7 +49,7 @@ def post(forum_id, thread_id):
 
         rows = session.execute("SELECT * FROM Content where threadid = %s;", [UUID(thread_id)])
 
-        #TODO: order by timestamp in chronological order
+        
         posts = {}
         all_posts = []
         for post_row in rows:
@@ -58,6 +58,9 @@ def post(forum_id, thread_id):
             posts['timestamp'] = post_row.posttimestamp
             all_posts.append(posts.copy())
 
+        #Orders post in chronological order 
+        # https://stackoverflow.com/questions/33886140/sort-timestamp-in-python-dictionary
+        all_posts.sort(key=lambda x:x['timestamp'])
 
         if all_posts == []:
             return get_response(404)
