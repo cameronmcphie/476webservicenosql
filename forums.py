@@ -1,6 +1,6 @@
 from helper_funs import *
 from cassandra.cluster import Cluster
-from uuid import uuid4, UUID
+from uuid import uuid4
 
 
 def forum():
@@ -9,7 +9,6 @@ def forum():
         # auth contains the username and Password
         auth = request.authorization
 
-        # TODO: uncomment when working 
         if auth_check(auth) is False:
             return get_response(401)
 
