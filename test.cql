@@ -37,6 +37,8 @@ CREATE TABLE Forums (
   Primary Key (forumid)
 );
 
+CREATE INDEX on discussion_forum.Forums (forumtitle);
+
 --Users Inserts
 INSERT INTO discussion_forum.Users (username, password)
 VALUES ('cameron', 'test');
