@@ -51,24 +51,32 @@ def init_db():
 
         session.execute("""
             CREATE TABLE Content (
-                forumid uuid,
-                forumcreator text,
-                forumtitle text,
-                threadid uuid,
-                threadtitle text,
-                postid uuid,
-                postauthor text,
-                posttimestamp timestamp,
-                posttext text,
-                Primary Key ((forumid))
+                  forumid uuid,
+                  threadid uuid,
+                  threadtitle text,
+                  postid uuid,
+                  postauthor text,
+                  posttimestamp timestamp,
+                  posttext text,
+                  Primary Key (postid)
                 );
         """)
+        #forumid
 
         session.execute("CREATE INDEX ON discussion_forum.Content (threadid);")
 
-        session.execute("CREATE INDEX ON discussion_forum.Content (postid);")
+        # session.execute("CREATE INDEX ON discussion_forum.Content (postid);")
 
         session.execute("CREATE INDEX ON discussion_forum.Content (posttimestamp);")
+
+        session.execute("DROP TABLE IF EXISTS Forums;")
+
+        session.execute("""CREATE TABLE Forums (
+          forumid uuid,
+          forumcreator text,
+          forumtitle text,
+          Primary Key (forumid)
+        );""")
 
         session.execute("""
         INSERT INTO discussion_forum.Users (username, password)
@@ -87,37 +95,55 @@ def init_db():
 
         #insert test data for the discussion forums (forums)
         session.execute("""
-        INSERT INTO discussion_forum.Content (forumid, forumcreator, forumtitle, postid)
-        VALUES (%s,%s,%s,%s);
-        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), 'cameron', 'Forum1', util.uuid_from_time(datetime.utcnow())))
+        INSERT INTO discussion_forum.Forums (forumid, forumcreator, forumtitle)
+        VALUES (%s, %s, %s);
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), 'cameron', 'Forum1'))
 
         session.execute("""
-        INSERT INTO discussion_forum.Content (forumid, forumcreator, forumtitle, postid)
-        VALUES (%s,%s,%s,%s);
-        """,(UUID('a5d61420-ec41-11e8-81a8-000000000000'), 'brian', 'Forum2', util.uuid_from_time(datetime.utcnow())))
+        INSERT INTO discussion_forum.Forums (forumid, forumcreator, forumtitle)
+        VALUES (%s,%s,%s);
+        """,(UUID('a5d61420-ec41-11e8-81a8-000000000000'), 'brian', 'Forum2'))
 
         session.execute("""
-        INSERT INTO discussion_forum.Content (forumid, forumcreator, forumtitle, postid)
-        VALUES (%s,%s,%s,%s);
-        """,(UUID('a697b670-ec41-11e8-81a8-000000000000'), 'elmer', 'Forum2', util.uuid_from_time(datetime.utcnow())))
+        INSERT INTO discussion_forum.Forums (forumid, forumcreator, forumtitle)
+        VALUES (%s,%s,%s);
+        """,(UUID('a697b670-ec41-11e8-81a8-000000000000'), 'elmer', 'Forum2'))
 
         #insert test data for threads
         session.execute("""
         INSERT INTO discussion_forum.Content (forumid, threadid, threadtitle, postid, postauthor, posttimestamp, posttext)
         VALUES (%s, %s, %s, %s, %s, %s, %s);
-        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), util.uuid_from_time(datetime.utcnow()), 'Forum 1, Thread 1', util.uuid_from_time(datetime.utcnow()), 'cameron', datetime.utcnow(), 'Post text 1'))
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'),UUID('420399d1-f804-11e8-9332-000000000000'), 'Forum 1, Thread 1', util.uuid_from_time(datetime.utcnow()), 'cameron', datetime.utcnow(), 'Post text 1'))
                                                                                                                                     #used to be dateof(datetime.utcnow())
         session.execute("""
         INSERT INTO discussion_forum.Content (forumid, threadid, threadtitle, postid, postauthor, posttimestamp, posttext)
         VALUES (%s, %s, %s, %s, %s, %s, %s);
-        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), util.uuid_from_time(datetime.utcnow()), 'Forum 1, Thread 2', util.uuid_from_time(datetime.utcnow()), 'brian', datetime.utcnow(), 'Post text 2'))
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), UUID('a5d61420-ec41-11e8-81a8-000000000000'), 'Forum 1, Thread 2', util.uuid_from_time(datetime.utcnow()), 'brian', datetime.utcnow(), 'Post text 2'))
 
         session.execute("""
         INSERT INTO discussion_forum.Content (forumid, threadid, threadtitle, postid, postauthor, posttimestamp, posttext)
         VALUES (%s, %s, %s, %s, %s, %s, %s);
-        """,(UUID('a5d61420-ec41-11e8-81a8-000000000000'), util.uuid_from_time(datetime.utcnow()), 'Forum 2, Thread 3', util.uuid_from_time(datetime.utcnow()), 'elmer', datetime.utcnow(), 'Post text 3'))
+        """,(UUID('a5d61420-ec41-11e8-81a8-000000000000'), UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), 'Forum 2, Thread 3', util.uuid_from_time(datetime.utcnow()), 'elmer', datetime.utcnow(), 'Post text 3'))
 
         #insert test data for posts
+        session.execute("""
+        INSERT INTO discussion_forum.Content (forumid, threadid, postid, postauthor, posttimestamp, posttext)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), UUID('420399d1-f804-11e8-9332-000000000000'), util.uuid_from_time(datetime.utcnow()), 'cameron', datetime.utcnow(), 'Forum 1, Thread 1, Post 2'))
+
+        session.execute("""
+        INSERT INTO discussion_forum.Content (forumid, threadid, postid, postauthor, posttimestamp, posttext)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), UUID('420399d1-f804-11e8-9332-000000000000'), util.uuid_from_time(datetime.utcnow()), 'elmer', datetime.utcnow(), 'Forum 1, Thread 1, Post 3'))
+
+        session.execute("""
+        INSERT INTO discussion_forum.Content (forumid, threadid, postid, postauthor, posttimestamp, posttext)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """,(UUID('a5d59ef0-ec41-11e8-81a8-000000000000'), UUID('a5d61420-ec41-11e8-81a8-000000000000'), util.uuid_from_time(datetime.utcnow()), 'elmer', datetime.utcnow(), 'Forum 1, Thread 2, Post 2'))
+
+
+
+
 
 
     print ('Database Initilaized')
