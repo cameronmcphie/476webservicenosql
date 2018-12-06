@@ -19,6 +19,7 @@ CREATE TABLE Content (
   postauthor text,
   posttimestamp timestamp,
   posttext text,
+  mostrecent timestamp,
   Primary Key (postid)
 );
 

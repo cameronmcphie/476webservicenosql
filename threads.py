@@ -73,11 +73,12 @@ def thread(forum_id):
             threads = {}
             all_threads = []
             for thread_row in rows:
-                threads['id'] = thread_row.threadid
-                threads['title'] = thread_row.threadtitle
-                threads['creator'] = thread_row.postauthor
-                threads['timestamp'] = thread_row.posttimestamp
-                all_threads.append(threads.copy())
+                if (thread_row.threadtitle != None):
+                    threads['id'] = thread_row.threadid
+                    threads['title'] = thread_row.threadtitle
+                    threads['creator'] = thread_row.postauthor
+                    threads['timestamp'] = thread_row.mostrecenttimestamp
+                    all_threads.append(threads.copy())
 
             # If the the quey returns an empty result
             # e.g. http://127.0.0.1:5000/forums/100
