@@ -79,6 +79,8 @@ def init_db():
           Primary Key (forumid)
         );""")
 
+        session.execute("CREATE INDEX on discussion_forum.Forums (forumtitle);")
+
         session.execute("""
         INSERT INTO discussion_forum.Users (username, password)
         VALUES (%s, %s);
