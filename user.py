@@ -75,8 +75,8 @@ def change_pass(username):
         # If using fetchall() there is a potential error because it returns a list of tuples rather than just one tuple
         user = conn.execute(query, [data.get('username')]) #.fetchone()
 
-
-        if user == None:
+        print(bool(user))
+        if (not bool(user)):
             #print ("hah not found")
             return get_response(404)
         # elif auth is False or auth_check(auth) is False:
