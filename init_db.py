@@ -61,7 +61,8 @@ def init_db():
                   Primary Key (postid)
                 );
         """)
-        #forumid
+        
+        session.execute("CREATE INDEX ON discussion_forum.Content (forumid);")
 
         session.execute("CREATE INDEX ON discussion_forum.Content (threadid);")
 
