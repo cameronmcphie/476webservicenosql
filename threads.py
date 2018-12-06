@@ -50,8 +50,9 @@ def thread(forum_id):
             # thread_title = thread_title.replace('"', "'")
 
             post_id = uuid4()
-            session.execute("INSERT INTO Content (postid, forumid, postauthor, posttext, posttimestamp, threadid, threadtitle) VALUES(%s, %s, %s, %s, %s, %s, %s)", (post_id, UUID(forum_id), author, post_text, datetime.utcnow(), uuid4(), thread_title))
-
+            session.execute("INSERT INTO Content (postid, forumid, postauthor, posttext, posttimestamp, threadid, threadtitle, mostrecenttimestamp) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", (post_id, UUID(forum_id), author, post_text, datetime.utcnow(), uuid4(), thread_title, datetime.utcnow()))
+            
+            
             thread_ids = session.execute("SELECT threadid from Content where postid=%s", [post_id])
 
             for tID in thread_ids:
